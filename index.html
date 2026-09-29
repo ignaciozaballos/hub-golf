@@ -15,8 +15,10 @@
     --muted: #6b7a70;
     --green-1: #57a868;
     --green-2: #37793f;
-    --card-w: min(80vw, 340px);
     --gap: 14px;
+    /* la tarjeta se adapta al alto de la pantalla para que la foto se vea entera */
+    --card-w: min(82vw, 340px, calc((100vh - 250px) * 0.706));
+    --card-w: min(82vw, 340px, calc((100dvh - 250px) * 0.706));
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html { background: var(--bg); }
@@ -28,18 +30,18 @@
     padding: max(20px, env(safe-area-inset-top)) 0 max(28px, env(safe-area-inset-bottom));
     overflow-x: hidden;
   }
-  .wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  .wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
   .hero {
     margin: 0 16px;
     background: linear-gradient(135deg, var(--green-1), var(--green-2));
     color: #fff;
-    border-radius: 32px;
-    padding: 30px 28px;
-    box-shadow: 0 12px 30px rgba(55, 121, 63, .25);
+    border-radius: 22px;
+    padding: 12px 20px 13px;
+    box-shadow: 0 8px 20px rgba(55, 121, 63, .22);
   }
-  .hero h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -.02em; }
-  .hero p { margin-top: 8px; font-size: 1.02rem; font-weight: 600; opacity: .92; line-height: 1.4; }
+  .hero h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; }
+  .hero p { margin-top: 2px; font-size: .85rem; font-weight: 600; opacity: .9; line-height: 1.3; }
 
   .section-head {
     display: flex; align-items: center; justify-content: space-between;
@@ -150,7 +152,7 @@
   <main class="wrap">
     <header class="hero">
       <h1>⛳ Mi Golf</h1>
-      <p>Todas mis herramientas de golf en un solo sitio.</p>
+      <p>Mis herramientas de golf en un solo sitio</p>
     </header>
 
     <div class="section-head">
