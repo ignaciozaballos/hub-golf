@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eef2ee">
+<title>Golf Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef2ee;
+    --ink: #17231b;
+    --muted: #6b7a70;
+    --green-1: #57a868;
+    --green-2: #37793f;
+    --card-w: min(80vw, 340px);
+    --gap: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { background: var(--bg); }
+  body {
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: max(20px, env(safe-area-inset-top)) 0 max(28px, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+  .hero {
+    margin: 0 16px;
+    background: linear-gradient(135deg, var(--green-1), var(--green-2));
+    color: #fff;
+    border-radius: 32px;
+    padding: 30px 28px;
+    box-shadow: 0 12px 30px rgba(55, 121, 63, .25);
+  }
+  .hero h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -.02em; }
+  .hero p { margin-top: 8px; font-size: 1.02rem; font-weight: 600; opacity: .92; line-height: 1.4; }
+
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 24px 0;
+  }
+  .section-label {
+    font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .swipe-hint { font-size: .8rem; font-weight: 700; color: var(--muted); }
+
+  /* ---------- Carrusel horizontal ---------- */
+  .carousel-wrap { position: relative; }
+  .carousel {
+    display: flex;
+    gap: var(--gap);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px calc((100% - var(--card-w)) / 2) 18px;
+    scroll-padding: 0 calc((100% - var(--card-w)) / 2);
+    scrollbar-width: none;
+  }
+  .carousel::-webkit-scrollbar { display: none; }
+
+  .card {
+    position: relative;
+    flex: 0 0 var(--card-w);
+    aspect-ratio: 3 / 4.25;
+    scroll-snap-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-decoration: none;
+    color: #fff;
+    border-radius: 32px;
+    overflow: hidden;
+    background: #2d4a35;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, .18);
+    transition: transform .25s ease, box-shadow .25s ease;
+    isolation: isolate;
+  }
+  .card img {
+    position: absolute; inset: 0; z-index: -2;
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform .6s ease;
+  }
+  .card::before {  /* degradado para que el texto se lea sobre la foto */
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 26%, rgba(6,20,12,.32) 50%, rgba(6,20,12,.9) 100%);
+  }
+  .card:active { transform: scale(.985); }
+  @media (hover: hover) {
+    .card:hover img { transform: scale(1.05); }
+  }
+
+  .card .badge {
+    position: absolute; top: 18px; left: 18px;
+    width: 52px; height: 52px;
+    display: grid; place-items: center;
+    font-size: 1.6rem;
+    background: rgba(255, 255, 255, .22);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 18px;
+  }
+  .card .body { padding: 0 22px 22px; }
+  .card h2 { font-size: 1.45rem; font-weight: 800; letter-spacing: -.01em; line-height: 1.15; text-shadow: 0 2px 12px rgba(0,0,0,.35); }
+  .card p { margin-top: 10px; font-size: .95rem; font-weight: 600; line-height: 1.42; opacity: .94; }
+  .card .go {
+    margin-top: 16px;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255, 255, 255, .92);
+    color: var(--green-2);
+    padding: 10px 18px; border-radius: 999px;
+    font-weight: 800; font-size: .92rem;
+  }
+
+  /* ---------- Puntos e indicadores ---------- */
+  .dots { display: flex; justify-content: center; gap: 8px; margin-top: -4px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 999px; border: 0; padding: 0;
+    background: #b9c6bc; cursor: pointer;
+    transition: width .25s ease, background .25s ease;
+  }
+  .dot.active { width: 26px; background: var(--green-2); }
+
+  .arrow {
+    display: none;
+    position: absolute; top: 50%; transform: translateY(-60%);
+    width: 46px; height: 46px; border-radius: 50%; border: 0;
+    background: #fff; color: var(--ink);
+    font-size: 1.3rem; font-weight: 800; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    z-index: 2;
+  }
+  .arrow.prev { left: 10px; }
+  .arrow.next { right: 10px; }
+  .arrow[disabled] { opacity: .35; cursor: default; }
+  @media (hover: hover) and (pointer: fine) { .arrow { display: grid; place-items: center; } }
+
+  footer { text-align: center; color: var(--muted); font-size: .82rem; font-weight: 600; padding: 4px 16px 0; }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <h1>⛳ Mi Golf</h1>
+      <p>Todas mis herramientas de golf en un solo sitio.</p>
+    </header>
+
+    <div class="section-head">
+      <div class="section-label">Mis apps</div>
+      <div class="swipe-hint" id="hint">Desliza →</div>
+    </div>
+
+    <div class="carousel-wrap">
+      <button class="arrow prev" id="prev" aria-label="Anterior">‹</button>
+      <section class="carousel" id="carousel"></section>
+      <button class="arrow next" id="next" aria-label="Siguiente">›</button>
+    </div>
+    <div class="dots" id="dots"></div>
+
+    <footer id="footer"></footer>
+  </main>
+
+<script>
+/* ============================================================
+   AÑADIR UNA APP NUEVA: copia un bloque { ... }, pégalo al final
+   de la lista y cambia los textos.
+   - image: sube la foto a la carpeta images/ (mejor vertical, ~1000x1330 px)
+   ============================================================ */
+const APPS = [
+  {
+    icon: "⛳",
+    title: "HCP Tracker",
+    desc: "Mi hándicap oficial frente al teórico calculado con todas mis vueltas, con evolución, objetivo y estadísticas.",
+    url: "https://ignaciozaballos.github.io/hcp-tracker/",
+    image: "images/hcp-tracker.jpg"
+  },
+  {
+    icon: "🏆",
+    title: "Torneos Comunidad Valenciana",
+    desc: "Todos los torneos de la Comunidad Valenciana en un solo lugar, actualizados cada semana.",
+    url: "https://ignaciozaballos.github.io/mis-torneos-golf/",
+    image: "images/torneos.jpg"
+  },
+  {
+    icon: "📊",
+    title: "Clasificación HCP Live",
+    desc: "Ranking de hándicap de los 15 amigos, actualizado automáticamente desde la RFEG.",
+    url: "https://ignaciozaballos.github.io/clasificacion-golf/",
+    image: "images/clasificacion.jpg"
+  }
+];
+
+const carousel = document.getElementById('carousel');
+const dotsEl = document.getElementById('dots');
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+
+APPS.forEach((app, i) => {
+  const a = document.createElement('a');
+  a.className = 'card';
+  a.href = app.url;
+  a.innerHTML = `
+    <img src="${app.image}" alt="" ${i === 0 ? '' : 'loading="lazy"'} draggable="false">
+    <div class="badge">${app.icon}</div>
+    <div class="body">
+      <h2>${app.title}</h2>
+      <p>${app.desc}</p>
+      <span class="go">Abrir <span aria-hidden="true">→</span></span>
+    </div>`;
+  carousel.appendChild(a);
+
+  const d = document.createElement('button');
+  d.className = 'dot';
+  d.setAttribute('aria-label', 'Ir a ' + app.title);
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+
+const cards = [...carousel.children];
+const dots = [...dotsEl.children];
+
+function current() {
+  const mid = carousel.scrollLeft + carousel.clientWidth / 2;
+  let best = 0, bestDist = Infinity;
+  cards.forEach((c, i) => {
+    const dist = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
+    if (dist < bestDist) { bestDist = dist; best = i; }
+  });
+  return best;
+}
+function goTo(i) {
+  i = Math.max(0, Math.min(cards.length - 1, i));
+  const c = cards[i];
+  carousel.scrollTo({ left: c.offsetLeft - (carousel.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' });
+}
+function update() {
+  const i = current();
+  dots.forEach((d, k) => d.classList.toggle('active', k === i));
+  prev.disabled = i === 0;
+  next.disabled = i === cards.length - 1;
+  document.getElementById('hint').style.opacity = carousel.scrollLeft > 20 ? 0 : 1;
+}
+carousel.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+window.addEventListener('resize', update);
+prev.addEventListener('click', () => goTo(current() - 1));
+next.addEventListener('click', () => goTo(current() + 1));
+update();
+
+document.getElementById('footer').textContent =
+  APPS.length + (APPS.length === 1 ? ' app' : ' apps') + ' · ignaciozaballos.github.io';
+</script>
+</body>
+</html>
